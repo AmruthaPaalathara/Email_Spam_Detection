@@ -1,0 +1,17 @@
+# Python
+__pycache__/
+*.py[cod]
+*.so
+
+# Virtualenv
+venv/
+env/
+
+
+
+# IDE/OS files
+.vscode/
+.DS_Store
+
+# Secrets
+.env
