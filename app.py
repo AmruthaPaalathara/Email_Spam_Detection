@@ -50,7 +50,7 @@ if st.button("Classify"):
         # Feature extraction
         if pipeline == "TF-IDF Only":
             vect  = b_tf
-            model = b_nb if model_name=="NaiveBayes" else b_svm
+            model = b_nb if model_name=="SVM" else b_svm
             X = vect.transform([text])
         else:
             emb = openai.embeddings.create(
@@ -60,7 +60,7 @@ if st.button("Classify"):
             emb_arr = e_sc.transform(np.array(emb)[None,:])
             X_tfidf = e_tf.transform([text]).toarray()
             X = np.hstack([X_tfidf, emb_arr])
-            model = e_gnb if model_name=="NaiveBayes" else e_svm
+            model = e_gnb if model_name=="SVM" else e_svm
 
         # Prediction + confidence
         pred = model.predict(X)[0]

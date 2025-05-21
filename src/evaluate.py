@@ -1,12 +1,20 @@
-import joblib, numpy as np, matplotlib.pyplot as plt
+import joblib, numpy as np, matplotlib.pyplot as plt # for loading saved model artifacts,  numerical operations, plotting confusion matrices and ROC curves
+
 from sklearn.metrics import (
     accuracy_score, precision_recall_fscore_support,
     confusion_matrix, roc_curve
 )
 from sklearn.model_selection import train_test_split
+
+# our preprocessing helper: loads & cleans text, returns X (TF-IDF), y (labels), and the vectorizer
 from src.preprocess import load_and_preprocess
 
 def plot_cm(cm, title):
+    
+    """
+    Display a confusion matrix `cm` with a color map and proper axis labels.
+    """
+    
     plt.figure()
     plt.imshow(cm, cmap='Blues')
     plt.title(title); plt.colorbar()
@@ -21,6 +29,7 @@ def main():
     )
 
     for name, fname in [('NB','nb.joblib'), ('SVM','svm.joblib')]:
+         # 3) Iterate over both models: Naive Bayes (NB) and Support Vector Machine (SVM)
         m = joblib.load(f"models/{fname}")
         ypred = m.predict(Xte)
         acc = accuracy_score(yte, ypred)

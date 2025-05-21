@@ -8,7 +8,7 @@ import openai
 import numpy as np
 import pandas as pd
 from sklearn.model_selection import train_test_split
-from sklearn.naive_bayes import GaussianNB     # ← use GaussianNB here
+from sklearn.naive_bayes import GaussianNB    
 from sklearn.svm import LinearSVC
 from sklearn.preprocessing import StandardScaler
 from src.preprocess import load_and_preprocess
@@ -16,16 +16,38 @@ from src.preprocess import load_and_preprocess
 openai.api_key = os.getenv("OPENAI_API_KEY")
 
 def get_embeddings(texts, batch_size=100, max_len_chars=5000):
-    all_embs = []
+    """
+    Retrieve OpenAI text embeddings in manageable batches.
+    
+    Args:
+      texts (List[str]): List of raw email strings to embed.
+      batch_size (int): Number of texts per API call to avoid rate limits.
+      max_len_chars (int): Maximum characters per text to respect token limits.
+      
+    Returns:
+      np.ndarray: Array of shape (len(texts), embedding_dim) with each row an embedding.
+    """
+    all_embs = []  # accumulator for all embedding vectors
+
+    # Process texts in chunks of size `batch_size`
     for start in range(0, len(texts), batch_size):
-        batch = [t[:max_len_chars] for t in texts[start:start+batch_size]]
+        # Select and truncate the current batch of texts
+        batch_texts = texts[start : start + batch_size]
+        batch = [t[:max_len_chars] for t in batch_texts]  # enforce max length
+
+        # Call the embeddings endpoint for this batch
         resp = openai.embeddings.create(
             model="text-embedding-3-small",
             input=batch
         )
+
+        # Each entry in resp.data has an `.embedding` attribute (a vector)
         for entry in resp.data:
             all_embs.append(entry.embedding)
+
+    # Convert list of lists → NumPy array for downstream modeling
     return np.array(all_embs)
+
 
 def main():
     # 1. Load TF-IDF features + labels
