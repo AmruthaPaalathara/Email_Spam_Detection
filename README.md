@@ -1,25 +1,54 @@
 # AI-Based Spam Email Detector
 
 ## Overview  
-This project implements an email spam detector using classical NLP and modern embeddings + LLM techniques on the SpamAssassin Public Corpus. It supports two pipelines:
+This repository contains an end-to-end pipeline for detecting spam emails using:
 
-1. **TF-IDF Only**  
-   - Preprocess text → TF-IDF vector (5 000 features)  
-   - Train MultinomialNB & LinearSVC  
-2. **TF-IDF + Embeddings**  
-   - Concatenate TF-IDF + OpenAI `text-embedding-3-small` (batched & truncated)  
-   - Train GaussianNB & LinearSVC  
+1. **Classical NLP** (TF-IDF + MultinomialNB & LinearSVC)  
+2. **Hybrid ML** (TF-IDF + OpenAI embeddings → GaussianNB & LinearSVC)  
+3. **Optional LLM explanations** (`gpt-4o-mini`)  
 
-A Streamlit UI enables uploading/pasting emails, selecting pipeline/model, viewing predictions with confidence, top-10 indicative words, and (optional) LLM explanations via `gpt-4o-mini`.
+All code—including data parsing, preprocessing, model training, evaluation and a Streamlit UI—is included.
 
 ---
 
-## 🔧 Requirements
+##  Key Features
 
-- Python 3.10+  
-- A valid OpenAI API key  
-- An Internet connection for embedding & LLM calls  
+- **Spam/Ham classification**  
+  Upload or paste an email; the app labels it **SPAM** or **HAM**.
 
-**Install dependencies**:
-```bash
-pip install -r requirements.txt
+- **Confidence score**  
+  Displays the model’s predicted probability or decision-function–derived confidence.
+
+- **Top-10 spam-indicative words**  
+  Shows the highest-weight features from the classifier (e.g. “free”, “click”, “offer”).
+
+- **(Optional) LLM rationale** via `gpt-4o-mini`  
+  When enabled, sends a brief prompt to OpenAI to explain _why_ the email was labeled spam/ham.
+
+---
+
+## ⚙️ Installation & Setup
+
+1. **Clone & enter**  
+   ```bash
+   git clone https://github.com/your-username/Email_Spam_Detector.git
+   cd Email_Spam_Detector
+
+
+## Accuracy details
+
+NB: acc=0.950, p=1.000, r=0.700, f1=0.824
+SVM: acc=0.987, p=0.989, r=0.930, f1=0.959
+
+## Limitations
+Dataset bias: Trained on SpamAssassin 2003 corpus; may not generalize to modern spam.
+
+Attachment & HTML: Does not parse HTML rendering or attachments.
+
+Token limits & cost: Embedding & LLM calls incur API cost and latency; batching/truncation mitigates limits but may lose context.
+
+Model simplicity: Uses TF-IDF + classical classifiers; more complex spam patterns may require transformer fine-tuning.
+
+No real-time ingestion: Demo is interactive, not hooked to live mail servers.
+
+Privacy: Emails sent to OpenAI API—avoid sensitive content.
